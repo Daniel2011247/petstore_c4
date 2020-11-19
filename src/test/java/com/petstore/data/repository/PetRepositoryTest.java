@@ -14,7 +14,6 @@ import org.springframework.test.context.jdbc.Sql;
 import javax.transaction.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -159,7 +158,7 @@ class PetRepositoryTest {
     }
 
     @Test
-    public void whenIdeletePetFromDatabase_thenPetIsDeleted() {
+    public void whenIDeletePetFromDatabase_thenPetIsDeleted() {
         assertThat(petRepository.existsById(11)).isTrue();
         petRepository.deleteById(11);
         assertThat(petRepository.existsById(11)).isFalse();
