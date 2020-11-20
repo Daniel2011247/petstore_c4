@@ -41,9 +41,8 @@ public class PetRestController {
         return ResponseEntity.ok().body(petService.findAllPets());
     }
 
-
     @GetMapping("one/{id}")
-    public ResponseEntity<?> deletePet (@PathVariable Integer id) {
+    public ResponseEntity<?> findPetById (@PathVariable Integer id) {
 
         log.info("Id of pet to be found --> {}", id);
 
@@ -53,6 +52,29 @@ public class PetRestController {
         } catch (PetDoesNotExistException e) {
             e.printStackTrace();
             return  ResponseEntity.badRequest().body(e.getMessage());
+        }
+
+        return ResponseEntity.ok().body(pet);
+    }
+
+    @DeleteMapping("/one/{id}")
+    public ResponseEntity<?> deletePet(@PathVariable Integer id) {
+        try {
+            petService.deletePetById(id);
+        } catch (PetDoesNotExistException e) {
+            return ResponseEntity.badRequest().body(e);
+        }
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/one/{id}")
+    public @ResponseBody ResponseEntity<?> updatePetById (@RequestBody Pet pet) {
+        try {
+            petService.updatePet(pet);
+
+        } catch (PetDoesNotExistException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
 
         return ResponseEntity.ok().body(pet);

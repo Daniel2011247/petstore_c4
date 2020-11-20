@@ -3,6 +3,7 @@ package com.petstore.service.pet;
 import com.petstore.data.model.Pet;
 import com.petstore.data.repository.PetRepository;
 import com.petstore.web.exceptions.PetDoesNotExistException;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -15,10 +16,12 @@ import org.springframework.test.context.jdbc.Sql;
 
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
+@Slf4j
 @Sql(scripts = "classpath:db/insert.sql")
 class PetServiceImpoTest {
 
@@ -30,6 +33,9 @@ class PetServiceImpoTest {
 
     @Autowired
     PetService petServiceImpl;
+
+    @Autowired
+    PetRepository petRepositoryImpl;
 
     Pet testpet;
 
@@ -49,14 +55,14 @@ class PetServiceImpoTest {
 
     @Test
     void mockTheFindByIdRepositoryTest() throws PetDoesNotExistException {
-        when(petRepository.findById(2)).thenReturn(Optional.of(testpet));
-        petService.findPetById(2);
+        when(petRepository.findById(31)).thenReturn(Optional.of(testpet));
+        petService.findPetById(31);
 
-        verify(petRepository, times(1)).findById(2);
+        verify(petRepository, times(1)).findById(31);
     }
 
     @Test
-    void mockDeletePetRepositoryTest () {
+    void mockDeletePetRepositoryTest () throws PetDoesNotExistException {
         doNothing().when(petRepository).deleteById(2);
         petService.deletePetById(2);
 
@@ -64,9 +70,21 @@ class PetServiceImpoTest {
     }
 
     @Test
-    void test() {
-
+    void testToFindById() {
         assertThrows(PetDoesNotExistException.class, ()-> petServiceImpl.findPetById(7));
+    }
+
+    @Test
+    void updatePetDetails () {
+        Pet savedPet = petRepositoryImpl.findById(31).orElse(null);
+        log.info("Pet object  --> {}", savedPet);
+
+        assertThat(savedPet).isNotNull();
+
+        savedPet.setAge(43);
+        petRepositoryImpl.save(savedPet);
+
+        log.info("Pet object now --> {}", savedPet);
     }
 
 }
