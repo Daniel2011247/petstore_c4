@@ -11,7 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -22,8 +22,11 @@ class PetRestControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    ObjectMapper mapper;
+
     @BeforeEach
     void setUp() {
+        mapper = new ObjectMapper();
     }
 
     @Test
@@ -36,13 +39,31 @@ class PetRestControllerTest {
         pet.setBreed("cat");
         pet.setAge(7);
 
-        ObjectMapper mapper = new ObjectMapper();
-
         this.mockMvc.perform(post("/pet/create")
                 .contentType("application/json")
                 .content(mapper.writeValueAsString(pet)))
                 .andDo(print())
                 .andExpect(status().isCreated())
+                .andReturn();
+
+    }
+
+    @Test
+    void whenICallTheGetPetsGetMethod_thenReturnsAllThePetsObject () throws Exception {
+
+        this.mockMvc.perform(get("/pet/all"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+    }
+
+    @Test
+    void whenICallTheFindMethod_thenReturnsThePetObject () throws Exception {
+
+        this.mockMvc.perform(get("/pet/one/31"))
+                .andDo(print())
+                .andExpect(status().isOk())
                 .andReturn();
 
     }

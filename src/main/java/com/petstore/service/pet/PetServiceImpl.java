@@ -2,6 +2,7 @@ package com.petstore.service.pet;
 
 import com.petstore.data.model.Pet;
 import com.petstore.data.repository.PetRepository;
+import com.petstore.web.exceptions.PetDoesNotExistException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,13 +30,18 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public Pet findPetById(Integer id) {
-        return petRepository.findById(id).orElse(null);
+    public Pet findPetById(Integer id) throws PetDoesNotExistException {
+
+        if (petRepository.existsById(id)) {
+            return petRepository.findById(id).get();
+        } else {
+            throw new PetDoesNotExistException("Pet with the id:" + id + " does not exist");
+        }
     }
 
     @Override
     public List<Pet> findAllPets() {
-        return null;
+        return petRepository.findAll();
     }
 
     @Override
